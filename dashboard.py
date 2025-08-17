@@ -10,7 +10,7 @@ with open('model/model_forest.pkl', 'rb') as f:
 with open('model/model_bayes.pkl', 'rb') as f:
     model_nb = pickle.load(f)
 
-with open('vectorizer_tfidf.pkl', 'rb') as f:
+with open('model/vectorizer_tfidf.pkl', 'rb') as f:
     vectorizer = pickle.load(f)
 
 # Load model sentimen per aspek 
