@@ -1,4 +1,4 @@
 streamlit
 pandas
 pickle
-matplotlib
+matplotlib.pyplot
