@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+import nltk
+nltk.download('punkt')
+nltk.download('punkt_tab')
 
 #  Load model dan vectorizer utama
 with open('model/model_forest.pkl', 'rb') as f:
