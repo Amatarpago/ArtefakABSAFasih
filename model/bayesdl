@@ -1,0 +1,61 @@
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.naive_bayes import MultinomialNB
+import pickle
+
+# === 1. BACA DATA ===
+df = pd.read_csv(r"E:\STIS\semester 7\SKRIPSI\Data\code fix\csv\3. Fasih Labelling.csv")
+all_aspects = ["mudah", "puas", "efisiensi", "error"]
+
+# === 2. TF-IDF VECTORIZE ===
+tfidf_vectorizer = TfidfVectorizer()
+x_tfidf = tfidf_vectorizer.fit_transform(df['content'])
+
+# === 3. LABEL ASPEK ===
+aspect_matrix = []
+for aspects in df['aspect']:
+    row = [1 if aspect in aspects else 0 for aspect in all_aspects]
+    aspect_matrix.append(row)
+y_aspect = np.array(aspect_matrix)
+
+# === 4. SPLIT DATA & LATIH MODEL ASPEK ===
+x_train_aspect, x_test_aspect, y_train_aspect, y_test_aspect = train_test_split(
+    x_tfidf, y_aspect, test_size=0.2, random_state=42
+)
+
+model_aspek = MultiOutputClassifier(MultinomialNB())
+model_aspek.fit(x_train_aspect, y_train_aspect)
+
+# === 5. SIMPAN MODEL ASPEK & TFIDF ===
+with open('model_forest.pkl', 'wb') as f:
+    pickle.dump(model_aspek, f)
+
+with open('vectorizer_tfidf.pkl', 'wb') as f:
+    pickle.dump(tfidf_vectorizer, f)
+
+print("✅ Model aspek dan vectorizer berhasil disimpan.")
+
+# === 6. TRAIN DAN SIMPAN MODEL SENTIMEN PER ASPEK ===
+for aspect in all_aspects:
+    # Ambil data yang tidak NA
+    valid_rows = df[df[aspect] != 'NA']
+    x_aspect = x_tfidf[valid_rows.index]
+    y_sentiment = valid_rows[aspect].reset_index(drop=True)
+
+    # Buang data kosong
+    x_aspect = x_aspect[~y_sentiment.isna()]
+    y_sentiment = y_sentiment.dropna()
+
+    # Split dan latih model
+    x_train, x_test, y_train, y_test = train_test_split(x_aspect, y_sentiment, test_size=0.2, random_state=42)
+    model_sentimen = MultinomialNB()
+    model_sentimen.fit(x_train, y_train)
+
+    # Simpan model
+    with open(f'bayes_sentimen_{aspect}.pkl', 'wb') as f:
+        pickle.dump(model_sentimen, f)
+
+    print(f"✅ Model sentimen untuk aspek '{aspect}' disimpan sebagai model_sentimen_{aspect}.pkl")
