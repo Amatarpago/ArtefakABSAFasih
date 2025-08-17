@@ -4,10 +4,10 @@ import pickle
 import matplotlib.pyplot as plt
 
 #  Load model dan vectorizer utama
-with open('model_forest.pkl', 'rb') as f:
+with open('model/model_forest.pkl', 'rb') as f:
     model_rf = pickle.load(f)
 
-with open('model_bayes.pkl', 'rb') as f:
+with open('model/model_bayes.pkl', 'rb') as f:
     model_nb = pickle.load(f)
 
 with open('vectorizer_tfidf.pkl', 'rb') as f:
@@ -17,11 +17,11 @@ with open('vectorizer_tfidf.pkl', 'rb') as f:
 aspects = ["mudah", "puas", "efisiensi", "error"]
 sentiment_models = {
     "Random Forest": {
-        aspect: pickle.load(open(f"forest_sentimen_{aspect}.pkl", "rb"))
+        aspect: pickle.load(open(f"model/forest_sentimen_{aspect}.pkl", "rb"))
         for aspect in aspects
     },
     "Naive Bayes": {
-        aspect: pickle.load(open(f"bayes_sentimen_{aspect}.pkl", "rb"))
+        aspect: pickle.load(open(f"model/bayes_sentimen_{aspect}.pkl", "rb"))
         for aspect in aspects
     }
 }
